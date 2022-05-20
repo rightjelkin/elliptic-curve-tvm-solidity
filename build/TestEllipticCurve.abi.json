@@ -1,0 +1,200 @@
+{
+	"ABI version": 2,
+	"version": "2.2",
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "addMod",
+			"inputs": [
+				{"name":"_base","type":"uint256"},
+				{"name":"_exp","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"}
+			]
+		},
+		{
+			"name": "invMod",
+			"inputs": [
+				{"name":"_x","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"}
+			]
+		},
+		{
+			"name": "expMod",
+			"inputs": [
+				{"name":"_base","type":"uint256"},
+				{"name":"_exp","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"}
+			]
+		},
+		{
+			"name": "toAffine",
+			"inputs": [
+				{"name":"_x","type":"uint256"},
+				{"name":"_y","type":"uint256"},
+				{"name":"_z","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"}
+			]
+		},
+		{
+			"name": "deriveY",
+			"inputs": [
+				{"name":"_prefix","type":"uint8"},
+				{"name":"_x","type":"uint256"},
+				{"name":"_aa","type":"uint256"},
+				{"name":"_bb","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"}
+			]
+		},
+		{
+			"name": "isOnCurve",
+			"inputs": [
+				{"name":"_x","type":"uint256"},
+				{"name":"_y","type":"uint256"},
+				{"name":"_aa","type":"uint256"},
+				{"name":"_bb","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"bool"}
+			]
+		},
+		{
+			"name": "ecInv",
+			"inputs": [
+				{"name":"_x","type":"uint256"},
+				{"name":"_y","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"}
+			]
+		},
+		{
+			"name": "ecAdd",
+			"inputs": [
+				{"name":"_x1","type":"uint256"},
+				{"name":"_y1","type":"uint256"},
+				{"name":"_x2","type":"uint256"},
+				{"name":"_y2","type":"uint256"},
+				{"name":"_aa","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"}
+			]
+		},
+		{
+			"name": "ecSub",
+			"inputs": [
+				{"name":"_x1","type":"uint256"},
+				{"name":"_y1","type":"uint256"},
+				{"name":"_x2","type":"uint256"},
+				{"name":"_y2","type":"uint256"},
+				{"name":"_aa","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"}
+			]
+		},
+		{
+			"name": "ecMul",
+			"inputs": [
+				{"name":"_k","type":"uint256"},
+				{"name":"_x","type":"uint256"},
+				{"name":"_y","type":"uint256"},
+				{"name":"_aa","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"}
+			]
+		},
+		{
+			"name": "jacAdd",
+			"inputs": [
+				{"name":"_x1","type":"uint256"},
+				{"name":"_y1","type":"uint256"},
+				{"name":"_z1","type":"uint256"},
+				{"name":"_x2","type":"uint256"},
+				{"name":"_y2","type":"uint256"},
+				{"name":"_z2","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"},
+				{"name":"value2","type":"uint256"}
+			]
+		},
+		{
+			"name": "jacDouble",
+			"inputs": [
+				{"name":"_x","type":"uint256"},
+				{"name":"_y","type":"uint256"},
+				{"name":"_z","type":"uint256"},
+				{"name":"_aa","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"},
+				{"name":"value2","type":"uint256"}
+			]
+		},
+		{
+			"name": "jacMul",
+			"inputs": [
+				{"name":"_d","type":"uint256"},
+				{"name":"_x","type":"uint256"},
+				{"name":"_y","type":"uint256"},
+				{"name":"_z","type":"uint256"},
+				{"name":"_aa","type":"uint256"},
+				{"name":"_pp","type":"uint256"}
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"},
+				{"name":"value1","type":"uint256"},
+				{"name":"value2","type":"uint256"}
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		}
+	],
+	"data": [
+		{"key":1,"name":"deploySeed","type":"uint128"}
+	],
+	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"deploySeed","type":"uint128"}
+	]
+}
