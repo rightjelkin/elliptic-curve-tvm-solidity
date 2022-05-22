@@ -16,10 +16,8 @@ library EllipticCurve {
   }
 
   function addMod(uint256 _x, uint256 _y, uint256 _pp) internal returns (uint256) {
-    /*
-    //     uint256 a =  0x56915849F52CC8F76F5FD7E4BF60DB4A43BF633E1B1383F85FE89164BFADCBDB;
-    uint256 pp = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f;
-    return (a % pp);try from C
+    _x = _x % _pp;
+    _y = _y % _pp;
     if (_y == 0) {
       return _x;
     }
@@ -29,8 +27,8 @@ library EllipticCurve {
     } else {
       return _pp - _y + _x;
     }
-    */
-    return ((_x % _pp) + (_y % _pp)) % _pp;
+
+    //return ((_x % _pp) + (_y % _pp)) % _pp;
   }
 
   function mulMod(uint256 _x, uint256 _y, uint256 _pp) internal returns (uint256) {
@@ -41,11 +39,13 @@ library EllipticCurve {
     }
 
     uint256 r = 0;
+    _x = _x % _pp;
+    _y = _y % _pp;
     while (_y > 0) {
       if (_y & 1 != 0) {
         r = addMod(r, _x, _pp);
       }
-      _x = (_x << 1) % _pp;
+      _x = addMod(_x, _x, _pp);
       _y = _y >> 1;
     }
     return r;
@@ -88,11 +88,11 @@ library EllipticCurve {
     uint256 r = 1;
     uint256 bit = U255_MAX_PLUS_1;
     while (bit > 0) {
-        r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & bit))), _pp);
-        r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & (bit / 2)))), _pp);
-        r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & (bit / 4)))), _pp);
-        r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & (bit / 8)))), _pp);
-        bit = bit / 16;
+      r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & bit))), _pp);
+      r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & (bit / 2)))), _pp);
+      r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & (bit / 4)))), _pp);
+      r = mulMod(mulMod(r, r, _pp), (_base ** isZero(isZero(_exp & (bit / 8)))), _pp);
+      bit = bit / 16;
     }
 
     return r;
@@ -153,20 +153,20 @@ library EllipticCurve {
   /// @param _pp the modulus
   /// @return true if x,y in the curve, false else
   function isOnCurve(
-    uint _x,
-    uint _y,
-    uint _aa,
-    uint _bb,
-    uint _pp)
+    uint256 _x,
+    uint256 _y,
+    uint256 _aa,
+    uint256 _bb,
+    uint256 _pp)
   internal returns (bool)
   {
     if (0 == _x || _x >= _pp || 0 == _y || _y >= _pp) {
       return false;
     }
     // y^2
-    uint lhs = mulMod(_y, _y, _pp);
+    uint256 lhs = mulMod(_y, _y, _pp);
     // x^3
-    uint rhs = mulMod(mulMod(_x, _x, _pp), _x, _pp);
+    uint256 rhs = mulMod(mulMod(_x, _x, _pp), _x, _pp);
     if (_aa != 0) {
       // x^3 + a*x
       rhs = addMod(rhs, mulMod(_x, _aa, _pp), _pp);
@@ -210,9 +210,9 @@ library EllipticCurve {
     uint256 _pp)
     internal returns(uint256, uint256)
   {
-    uint x = 0;
-    uint y = 0;
-    uint z = 0;
+    uint256 x = 0;
+    uint256 y = 0;
+    uint256 z = 0;
 
     // Double if x1==x2 else add
     if (_x1==_x2) {
@@ -331,24 +331,34 @@ library EllipticCurve {
       return (_x1, _y1, _z1);
 
     // We follow the equations described in https://pdfs.semanticscholar.org/5c64/29952e08025a9649c2b0ba32518e9a7fb5c2.pdf Section 5
-    uint[4] zs; // z1^2, z1^3, z2^2, z2^3
+    /*uint256[] zs = new uint256[](4); // z1^2, z1^3, z2^2, z2^3
     zs[0] = mulMod(_z1, _z1, _pp);
     zs[1] = mulMod(_z1, zs[0], _pp);
     zs[2] = mulMod(_z2, _z2, _pp);
-    zs[3] = mulMod(_z2, zs[2], _pp);
+    zs[3] = mulMod(_z2, zs[2], _pp);*/
+
+    uint256 z12 = mulMod(_z1, _z1, _pp);
+    uint256 z13 = mulMod(_z1, z12, _pp);
+    uint256 z22 = mulMod(_z2, _z2, _pp);
+    uint256 z23 = mulMod(_z2, z22, _pp);
 
     // u1, s1, u2, s2
-    zs = [
+    /*zs = [
       mulMod(_x1, zs[2], _pp),
       mulMod(_y1, zs[3], _pp),
       mulMod(_x2, zs[0], _pp),
       mulMod(_y2, zs[1], _pp)
-    ];
+    ];*/
+
+    uint256 u1 = mulMod(_x1, z22, _pp);
+    uint256 s1 = mulMod(_y1, z23, _pp);
+    uint256 u2 = mulMod(_x2, z12, _pp);
+    uint256 s2 = mulMod(_y2, z13, _pp);
 
     // In case of zs[0] == zs[2] && zs[1] == zs[3], double function should be used
-    require(zs[0] != zs[2] || zs[1] != zs[3], EllipticCurveErrors.use_jacdouble_function_instead);
+    require(u1 != u2 || s1 !=s2, EllipticCurveErrors.use_jacdouble_function_instead);
 
-    uint[4] hr;
+    /*uint256[] hr = new uint256[](4);
     //h
     hr[0] = addMod(zs[2], _pp - zs[0], _pp);
     //r
@@ -356,15 +366,22 @@ library EllipticCurve {
     //h^2
     hr[2] = mulMod(hr[0], hr[0], _pp);
     // h^3
-    hr[3] = mulMod(hr[2], hr[0], _pp);
+    hr[3] = mulMod(hr[2], hr[0], _pp);*/
+
+    uint256 h = addMod(u2, _pp - u1, _pp);
+    uint256 r = addMod(s2, _pp - s1, _pp);
+    uint256 h2 = mulMod(h, h, _pp);
+    uint256 h3 =  mulMod(h2, h, _pp);
+
+
     // qx = -h^3  -2u1h^2+r^2
-    uint256 qx = addMod(mulMod(hr[1], hr[1], _pp), _pp - hr[3], _pp);
-    qx = addMod(qx, _pp - mulMod(2, mulMod(zs[0], hr[2], _pp), _pp), _pp);
+    uint256 qx = addMod(mulMod(r,r, _pp), _pp - h3, _pp);
+    qx = addMod(qx, _pp - mulMod(2, mulMod(u1, h2, _pp), _pp), _pp);
     // qy = -s1*z1*h^3+r(u1*h^2 -x^3)
-    uint256 qy = mulMod(hr[1], addMod(mulMod(zs[0], hr[2], _pp), _pp - qx, _pp), _pp);
-    qy = addMod(qy, _pp - mulMod(zs[1], hr[3], _pp), _pp);
+    uint256 qy = mulMod(r, addMod(mulMod(u1, h2, _pp), _pp - qx, _pp), _pp);
+    qy = addMod(qy, _pp - mulMod(s1, h3, _pp), _pp);
     // qz = h*z1*z2
-    uint256 qz = mulMod(hr[0], mulMod(_z1, _z2, _pp), _pp);
+    uint256 qz = mulMod(h, mulMod(_z1, _z2, _pp), _pp);
     return(qx, qy, qz);
   }
 
@@ -394,9 +411,9 @@ library EllipticCurve {
     uint256 z = mulMod(_z, _z, _pp); //z1^2
 
     // s
-    uint s = mulMod(4, mulMod(_x, y, _pp), _pp);
+    uint256 s = mulMod(4, mulMod(_x, y, _pp), _pp);
     // m
-    uint m = addMod(mulMod(3, x, _pp), mulMod(_aa, mulMod(z, z, _pp), _pp), _pp);
+    uint256 m = addMod(mulMod(3, x, _pp), mulMod(_aa, mulMod(z, z, _pp), _pp), _pp);
 
     // x, y, z at this point will be reassigned and rather represent qx, qy, qz from the paper
     // This allows to reduce the gas cost and stack footprint of the algorithm
@@ -449,7 +466,7 @@ library EllipticCurve {
           _z,
           _pp);
       }
-      remaining = remaining / 2;
+      remaining = remaining >> 1;
       (_x, _y, _z) = jacDouble(
         _x,
         _y,

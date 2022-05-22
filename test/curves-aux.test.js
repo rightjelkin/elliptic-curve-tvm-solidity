@@ -6,7 +6,7 @@ let ecLib
 
 let seed = 1000;
 
-describe("EllipticCurve", () => {
+describe("EllipticCurve: Check auxiliary operations for given curves", () => {
   // /////////////////////////////////////////// //
   // Check auxiliary operations for given curves //
   // /////////////////////////////////////////// //
@@ -33,18 +33,6 @@ describe("EllipticCurve", () => {
         });
       })
 
-      it('my own', async function () {
-        const affine = await ecLib.call({
-          method: 'addMod',
-          params: {
-            _base: 0,
-            _exp: 0,
-            _pp: pp
-          }
-        })
-        console.log(affine)
-      })
-
       // toAffine
       for (const [index, test] of curveData.toAffine.valid.entries()) {
         it(`should convert a Jacobian point to affine (${index + 1})`, async function () {
@@ -60,8 +48,8 @@ describe("EllipticCurve", () => {
           })
           const expectedX = Web3Utils.toBN(test.output.x)
           const expectedY = Web3Utils.toBN(test.output.y)
-          assert.equal(affine.value0.toString(), expectedX.toString())
-          assert.equal(affine.value0.toString(), expectedY.toString())
+          assert.equal(affine.value0.toString(16), expectedX.toString(16))
+          assert.equal(affine.value1.toString(16), expectedY.toString(16))
         })
       }
 
@@ -77,7 +65,7 @@ describe("EllipticCurve", () => {
             }
 
           })
-          assert.equal(inv.value0.toString(), test.output.k)
+          assert.equal(inv.toString(16), Web3Utils.toBN(test.output.k).toString(16))
         })
       }
 
@@ -108,7 +96,7 @@ describe("EllipticCurve", () => {
             }
 
           })
-          assert.equal(exp.value0.toString(), test.output.k)
+          assert.equal(exp.toString(16), Web3Utils.toBN(test.output.k).toString(16))
         })
       }
 
@@ -126,7 +114,7 @@ describe("EllipticCurve", () => {
               _pp: pp
             }
           })
-          assert.equal(Web3Utils.numberToHex(coordY.value0), test.output.y)
+          assert.equal(Web3Utils.numberToHex(coordY), test.output.y)
         })
       }
 
@@ -144,7 +132,7 @@ describe("EllipticCurve", () => {
                 _bb: bb,
                 _pp: pp
               }
-            })).value0,
+            })),
             test.output.isOnCurve
           )
         })
@@ -152,7 +140,7 @@ describe("EllipticCurve", () => {
 
       // invertPoint
       for (const [index, test] of curveData.invertPoint.valid.entries()) {
-        it(`should invert an EC point (${index + 1})`, async () => {
+        it(`should invert an EC point (${index + 1})`, async function () {
           this.timeout(20000);
           const invertedPoint = await ecLib.call({
             method: 'ecInv',
@@ -164,8 +152,8 @@ describe("EllipticCurve", () => {
           })
           const expectedX = Web3Utils.toBN(test.output.x)
           const expectedY = Web3Utils.toBN(test.output.y)
-          assert.equal(invertedPoint.value0.toString(), expectedX.toString())
-          assert.equal(invertedPoint.value0.toString(), expectedY.toString())
+          assert.equal(invertedPoint.value0.toString(16), expectedX.toString(16))
+          assert.equal(invertedPoint.value1.toString(16), expectedY.toString(16))
         })
       }
     })
