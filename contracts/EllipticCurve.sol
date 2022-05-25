@@ -15,6 +15,7 @@ library EllipticCurve {
     }
   }
 
+  // overflow safe
   function addMod(uint256 _x, uint256 _y, uint256 _pp) internal returns (uint256) {
     _x = _x % _pp;
     _y = _y % _pp;
@@ -27,28 +28,12 @@ library EllipticCurve {
     } else {
       return _pp - _y + _x;
     }
-
-    //return ((_x % _pp) + (_y % _pp)) % _pp;
   }
 
+  // just an alias btw....but its much more handy than raw using in code (imho)
   function mulMod(uint256 _x, uint256 _y, uint256 _pp) internal returns (uint256) {
-    require(_pp != 0, EllipticCurveErrors.modulus_is_zero);
-    
-    if (_x == 0 || _y == 0) {
-      return 0;
-    }
-
-    uint256 r = 0;
-    _x = _x % _pp;
-    _y = _y % _pp;
-    while (_y > 0) {
-      if (_y & 1 != 0) {
-        r = addMod(r, _x, _pp);
-      }
-      _x = addMod(_x, _x, _pp);
-      _y = _y >> 1;
-    }
-    return r;
+    (,uint256 remainder) = math.muldivmod(_x, _y, _pp); // MULDIVMODR safe and has a static cost (binary mulmod is gas overflow)
+    return remainder;
 
   }
 
